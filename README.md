@@ -16,8 +16,9 @@
 ## Live URLs
 - **Development**: https://3000-i1chc03f2yksuge7ejiqi-6532622b.e2b.dev
 - **API Health**: https://3000-i1chc03f2yksuge7ejiqi-6532622b.e2b.dev/api/health
-- **Production**: (To be deployed to Cloudflare Pages)
-- **GitHub**: (Repository to be configured)
+- **Production**: ⏳ Ready for deployment (run `./scripts/deploy-production.sh`)
+- **GitHub**: https://github.com/RemyLoveLogicAI/Sentinelmind-ai
+- **Backup**: [Download Latest](https://page.gensparksite.com/project_backups/toolu_01XVWL5Ftp3baAwk6UyYv76W.tar.gz)
 
 ## Data Architecture
 - **Data Models**: 
