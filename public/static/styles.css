@@ -1,0 +1,418 @@
+/**
+ * AI Hypnosis - Custom Styles
+ * Dark mode hypnotic interface
+ */
+
+/* Hypnotic gradient animations */
+@keyframes hypnotic-pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes hypnotic-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes hypnotic-wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Hypnotic elements */
+.hypnotic-gradient {
+  background: linear-gradient(135deg, #8B5CF6, #3B82F6, #8B5CF6);
+  background-size: 200% 200%;
+  animation: gradient-shift 10s ease infinite;
+}
+
+.hypnotic-border {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(#1F2937, #1F2937) padding-box,
+              linear-gradient(135deg, #8B5CF6, #3B82F6) border-box;
+}
+
+.hypnotic-glow {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5),
+              0 0 40px rgba(59, 130, 246, 0.3);
+}
+
+/* Spiral effect for hypnotic visuals */
+.spiral-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.spiral {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid;
+  border-radius: 50%;
+  border-color: transparent #8B5CF6 transparent #3B82F6;
+  animation: hypnotic-rotate 4s linear infinite;
+}
+
+.spiral:nth-child(2) {
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  animation-duration: 3s;
+  animation-direction: reverse;
+}
+
+.spiral:nth-child(3) {
+  width: 60%;
+  height: 60%;
+  top: 20%;
+  left: 20%;
+  animation-duration: 2s;
+}
+
+/* Trance depth indicator */
+.trance-meter {
+  position: relative;
+  height: 8px;
+  background: #374151;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.trance-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981, #3B82F6, #8B5CF6);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Defense shield effect */
+.defense-shield {
+  position: relative;
+  padding: 20px;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  animation: shield-pulse 2s ease infinite;
+}
+
+@keyframes shield-pulse {
+  0%, 100% {
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* Emergency mode styles */
+.emergency-active {
+  animation: emergency-flash 0.5s ease infinite;
+}
+
+@keyframes emergency-flash {
+  0%, 100% {
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+  50% {
+    background-color: rgba(239, 68, 68, 0.3);
+  }
+}
+
+/* Threat level indicators */
+.threat-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: threat-pulse 1.5s ease infinite;
+}
+
+.threat-low {
+  background: #10B981;
+  animation-duration: 3s;
+}
+
+.threat-medium {
+  background: #F59E0B;
+  animation-duration: 2s;
+}
+
+.threat-high {
+  background: #EF4444;
+  animation-duration: 1s;
+}
+
+.threat-critical {
+  background: #DC2626;
+  animation-duration: 0.5s;
+}
+
+@keyframes threat-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+/* Technique cards hover effects */
+.technique-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.technique-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+}
+
+/* Voice command indicator */
+.voice-listening {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background: rgba(139, 92, 246, 0.9);
+  border-radius: 20px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: voice-pulse 1s ease infinite;
+}
+
+@keyframes voice-pulse {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+.voice-wave {
+  width: 3px;
+  height: 20px;
+  background: white;
+  border-radius: 2px;
+  animation: voice-wave 0.5s ease infinite;
+}
+
+.voice-wave:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.voice-wave:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes voice-wave {
+  0%, 100% {
+    height: 20px;
+  }
+  50% {
+    height: 30px;
+  }
+}
+
+/* Practice agent avatars */
+.agent-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto;
+  position: relative;
+}
+
+.agent-susceptible {
+  background: linear-gradient(135deg, #10B981, #34D399);
+}
+
+.agent-resistant {
+  background: linear-gradient(135deg, #F59E0B, #FCD34D);
+}
+
+.agent-offensive {
+  background: linear-gradient(135deg, #EF4444, #F87171);
+}
+
+/* Script output formatting */
+.script-output {
+  font-family: 'Courier New', monospace;
+  background: #1F2937;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #8B5CF6;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.script-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #374151;
+}
+
+.script-section:last-child {
+  border-bottom: none;
+}
+
+/* Loading states */
+.loading-spinner {
+  border: 3px solid #374151;
+  border-top: 3px solid #8B5CF6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Success/Error states */
+.success-glow {
+  animation: success-pulse 0.5s ease;
+}
+
+@keyframes success-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.error-shake {
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .spiral-container {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .technique-card {
+    padding: 12px;
+  }
+  
+  .hypnotic-glow {
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* Dark mode scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4B5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6B7280;
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #8B5CF6;
+  ring-offset: 2px;
+  ring-offset-color: #1F2937;
+}
+
+/* Tooltip styles */
+.tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.tooltip:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: #1F2937;
+  color: #F3F4F6;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Animations for interactive elements */
+.interactive-element {
+  transition: all 0.2s ease;
+}
+
+.interactive-element:active {
+  transform: scale(0.95);
+}

@@ -1,34 +1,30 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "webapp",
-  "compatibility_date": "2025-08-16",
+  "name": "ai-hypnosis",
+  "compatibility_date": "2024-01-01",
   "pages_build_output_dir": "./dist",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
-  // "ai": {
-  //   "binding": "AI"
-  // }
+  "compatibility_flags": ["nodejs_compat"],
+  
+  // D1 Database for session tracking and technique storage
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hypnosis-db",
+      // ID will be added after creating the database with: npx wrangler d1 create hypnosis-db
+      "database_id": "YOUR_DATABASE_ID_HERE"
+    }
+  ],
+  
+  // KV Namespace for caching and quick access
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "YOUR_KV_ID_HERE",
+      "preview_id": "YOUR_KV_PREVIEW_ID_HERE"
+    }
+  ],
+  
+  // Environment variables (stored securely with wrangler secret)
+  // Use: npx wrangler pages secret put AI_API_KEY --project-name ai-hypnosis
+  // Use: npx wrangler pages secret put OPENAI_API_KEY --project-name ai-hypnosis
 }

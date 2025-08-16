@@ -1,19 +1,42 @@
 {
-  "name": "webapp",
+  "name": "ai-hypnosis",
+  "version": "1.0.0",
+  "description": "Revolutionary AI-powered hypnotism platform with offensive and defensive capabilities",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:sandbox": "wrangler pages dev dist --d1=hypnosis-db --local --ip 0.0.0.0 --port 3000",
     "build": "vite build",
-    "preview": "wrangler pages dev",
-    "deploy": "npm run build && wrangler pages deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "preview": "wrangler pages dev dist",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name ai-hypnosis",
+    "deploy:prod": "npm run build && npm run db:migrate:prod && wrangler pages deploy dist --project-name ai-hypnosis",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "clean-port": "fuser -k 3000/tcp 2>/dev/null || true",
+    "start": "npm run clean-port && npm run build && pm2 start ecosystem.config.cjs",
+    "restart": "npm run clean-port && pm2 restart ai-hypnosis",
+    "stop": "pm2 stop ai-hypnosis",
+    "logs": "pm2 logs ai-hypnosis --nostream",
+    "test": "curl http://localhost:3000/api/health",
+    "db:create": "wrangler d1 create hypnosis-db",
+    "db:migrate:local": "wrangler d1 execute hypnosis-db --local --file=./migrations/init.sql",
+    "db:migrate:prod": "wrangler d1 execute hypnosis-db --file=./migrations/init.sql",
+    "db:seed": "wrangler d1 execute hypnosis-db --local --file=./seed.sql",
+    "db:reset": "rm -rf .wrangler/state/v3/d1 && npm run db:migrate:local && npm run db:seed",
+    "git:init": "git init && git add . && git commit -m 'Initial commit'",
+    "git:commit": "git add . && git commit -m",
+    "git:status": "git status",
+    "git:log": "git log --oneline"
   },
   "dependencies": {
     "hono": "^4.9.2"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250705.0",
+    "@hono/vite-cloudflare-pages": "^0.4.2",
     "@hono/vite-build": "^1.2.0",
     "@hono/vite-dev-server": "^0.18.2",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
     "vite": "^6.3.5",
     "wrangler": "^4.4.0"
   }
