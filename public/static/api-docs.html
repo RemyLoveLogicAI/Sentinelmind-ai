@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - AI Hypnosis Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .endpoint { @apply border-l-4 border-purple-600 bg-gray-800 p-4 rounded mb-4; }
+        .method-get { @apply bg-green-600 text-white px-2 py-1 rounded text-xs font-bold; }
+        .method-post { @apply bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold; }
+        .code-block { @apply bg-gray-900 p-4 rounded overflow-x-auto text-sm; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="max-w-6xl mx-auto p-8">
+        <header class="mb-12">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-brain text-4xl text-purple-600"></i>
+                    <h1 class="text-4xl font-bold">AI Hypnosis API</h1>
+                </div>
+                <a href="/" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded">
+                    <i class="fas fa-home mr-2"></i>Home
+                </a>
+            </div>
+            <p class="text-gray-400">Revolutionary AI-powered hypnotism platform API documentation</p>
+            <div class="mt-4 text-sm">
+                <span class="text-gray-500">Base URL:</span> 
+                <code class="text-purple-400">/api</code>
+            </div>
+        </header>
+
+        <!-- System Endpoints -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-heartbeat mr-3 text-purple-600"></i>
+                System & Health
+            </h2>
+            
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-get mr-3">GET</span>
+                    <code class="text-lg">/api/health</code>
+                </div>
+                <p class="text-gray-400 mb-4">Check system health and status</p>
+                <div class="code-block">
+                    <pre class="text-green-400">{
+  "status": "operational",
+  "version": "1.0.0",
+  "timestamp": "2025-01-16T12:00:00.000Z",
+  "checks": {
+    "database": { "status": "ok", "responseTime": 12 },
+    "kv": { "status": "ok" },
+    "ai": { "status": "configured" }
+  }
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-get mr-3">GET</span>
+                    <code class="text-lg">/api/ready</code>
+                </div>
+                <p class="text-gray-400">Readiness check for load balancers</p>
+            </div>
+
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-get mr-3">GET</span>
+                    <code class="text-lg">/api/live</code>
+                </div>
+                <p class="text-gray-400">Liveness check</p>
+            </div>
+
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-get mr-3">GET</span>
+                    <code class="text-lg">/api/info</code>
+                </div>
+                <p class="text-gray-400">Get platform information and features</p>
+            </div>
+        </section>
+
+        <!-- Hypnosis Endpoints -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-magic mr-3 text-purple-600"></i>
+                Hypnosis Operations
+            </h2>
+            
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-post mr-3">POST</span>
+                    <code class="text-lg">/api/hypnosis/generate-script</code>
+                </div>
+                <p class="text-gray-400 mb-4">Generate a custom hypnotic script using AI</p>
+                <div class="mb-4">
+                    <p class="font-semibold mb-2">Request Body:</p>
+                    <div class="code-block">
+                        <pre class="text-yellow-400">{
+  "type": "induction" | "deepener" | "suggestion" | "emergence" | "full_session",
+  "goal": "Your hypnotic goal",
+  "intensity": "light" | "medium" | "deep" | "extreme",
+  "customization": {
+    "description": "Optional description",
+    "preferences": ["preference1", "preference2"],
+    "avoidances": ["thing1", "thing2"],
+    "duration": 300
+  }
+}</pre>
+                    </div>
+                </div>
+                <div>
+                    <p class="font-semibold mb-2">Response:</p>
+                    <div class="code-block">
+                        <pre class="text-green-400">{
+  "success": true,
+  "scriptId": 123,
+  "script": {
+    "title": "induction - Your goal",
+    "type": "induction",
+    "sections": [...],
+    "totalDuration": 300,
+    "techniques": ["progressive_relaxation"]
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-post mr-3">POST</span>
+                    <code class="text-lg">/api/hypnosis/offensive/execute</code>
+                </div>
+                <p class="text-gray-400 mb-4">Execute offensive hypnosis techniques</p>
+                <div class="mb-4">
+                    <p class="font-semibold mb-2">Request Body:</p>
+                    <div class="code-block">
+                        <pre class="text-yellow-400">{
+  "technique": "rapid_induction" | "covert_induction" | "embedded_command" | "confusion_technique",
+  "target": "target_description",
+  "parameters": { /* technique-specific params */ }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-post mr-3">POST</span>
+                    <code class="text-lg">/api/hypnosis/defensive/analyze</code>
+                </div>
+                <p class="text-gray-400 mb-4">Analyze input for hypnotic threats and patterns</p>
+                <div class="mb-4">
+                    <p class="font-semibold mb-2">Request Body:</p>
+                    <div class="code-block">
+                        <pre class="text-yellow-400">{
+  "input": "Text to analyze for hypnotic patterns",
+  "context": { /* optional context */ },
+  "mode": "aggressive" | "passive" | "auto"
+}</pre>
+                    </div>
+                </div>
+                <div>
+                    <p class="font-semibold mb-2">Response:</p>
+                    <div class="code-block">
+                        <pre class="text-green-400">{
+  "success": true,
+  "analysis": {
+    "threatDetected": true,
+    "threatLevel": "high",
+    "attackType": "embedded_commands",
+    "attackPatterns": [...],
+    "defenseStrategy": "pattern_interrupt",
+    "counterMeasures": [...],
+    "recommendations": [...]
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-post mr-3">POST</span>
+                    <code class="text-lg">/api/hypnosis/emergency-protocol</code>
+                </div>
+                <p class="text-gray-400 mb-4">🚨 Activate emergency extraction protocol ("They got me")</p>
+                <div>
+                    <p class="font-semibold mb-2">Response:</p>
+                    <div class="code-block">
+                        <pre class="text-green-400">{
+  "success": true,
+  "message": "Full protocol initiated. You're safe now, homie.",
+  "protocol": {
+    "status": "activated",
+    "extractionSteps": [...],
+    "groundingSequence": {...},
+    "shieldActivated": true
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Mode -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-graduation-cap mr-3 text-purple-600"></i>
+                Practice Mode
+            </h2>
+            
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-post mr-3">POST</span>
+                    <code class="text-lg">/api/practice/start-session</code>
+                </div>
+                <p class="text-gray-400 mb-4">Start a practice session with an AI agent</p>
+                <div class="mb-4">
+                    <p class="font-semibold mb-2">Request Body:</p>
+                    <div class="code-block">
+                        <pre class="text-yellow-400">{
+  "mode": "practice",
+  "difficulty": "easy" | "medium" | "hard" | "expert",
+  "agentType": "susceptible" | "resistant" | "offensive"
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Techniques & Progress -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-book mr-3 text-purple-600"></i>
+                Techniques & Progress
+            </h2>
+            
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-get mr-3">GET</span>
+                    <code class="text-lg">/api/techniques/library?category=induction&difficulty=advanced</code>
+                </div>
+                <p class="text-gray-400">Browse the technique library with optional filters</p>
+            </div>
+
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-get mr-3">GET</span>
+                    <code class="text-lg">/api/progress/stats</code>
+                </div>
+                <p class="text-gray-400 mb-4">Get user progress and statistics</p>
+                <p class="text-sm text-yellow-400">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Requires X-User-Id header
+                </p>
+            </div>
+        </section>
+
+        <!-- Core Commands -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-terminal mr-3 text-purple-600"></i>
+                Core Commands
+            </h2>
+            
+            <div class="endpoint">
+                <div class="flex items-center mb-2">
+                    <span class="method-post mr-3">POST</span>
+                    <code class="text-lg">/api/command/:command</code>
+                </div>
+                <p class="text-gray-400 mb-4">Execute core system commands</p>
+                <div class="code-block">
+                    <pre class="text-purple-400">Available Commands:
+- analyze-moment: Analyze current moment for patterns
+- ground-me: Trigger grounding protocol
+- scramble-this: Detect and neutralize NLP patterns
+- update-case-file: Log interaction to memory
+- extract-what-matters: Summarize key evidence</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Authentication & Headers -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-key mr-3 text-purple-600"></i>
+                Authentication & Headers
+            </h2>
+            
+            <div class="bg-gray-800 p-6 rounded">
+                <p class="mb-4">All API requests support the following headers:</p>
+                <div class="code-block">
+                    <pre class="text-blue-400">Content-Type: application/json
+X-User-Id: your_user_id (optional, auto-generated if not provided)
+X-Session-Id: session_id (optional, auto-generated if not provided)</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rate Limiting -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-tachometer-alt mr-3 text-purple-600"></i>
+                Rate Limiting
+            </h2>
+            
+            <div class="bg-gray-800 p-6 rounded">
+                <ul class="space-y-2">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>30 requests per minute per user for API endpoints</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>100 requests per minute per user for general endpoints</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Rate limit information included in response headers</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Error Codes -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-exclamation-circle mr-3 text-purple-600"></i>
+                Error Codes
+            </h2>
+            
+            <div class="bg-gray-800 p-6 rounded">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <code class="text-red-400">400</code> - Bad Request (Invalid input)
+                    </div>
+                    <div>
+                        <code class="text-red-400">404</code> - Not Found (Endpoint doesn't exist)
+                    </div>
+                    <div>
+                        <code class="text-yellow-400">429</code> - Too Many Requests (Rate limited)
+                    </div>
+                    <div>
+                        <code class="text-red-400">500</code> - Internal Server Error
+                    </div>
+                    <div>
+                        <code class="text-yellow-400">503</code> - Service Unavailable (Database/KV down)
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <p class="font-semibold mb-2">Error Response Format:</p>
+                    <div class="code-block">
+                        <pre class="text-red-400">{
+  "success": false,
+  "error": "Error message description",
+  "timestamp": "2025-01-16T12:00:00.000Z"
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-gray-500 mt-16 pb-8">
+            <p>AI Hypnosis Platform v1.0.0</p>
+            <p class="text-sm mt-2">Built with 🧠 by LoveLogicAI</p>
+        </footer>
+    </div>
+</body>
+</html>
