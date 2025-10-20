@@ -69,6 +69,9 @@ app.use('*', logger())
 app.use('/static/*', serveStatic({ root: './public' }))
 app.use('/samples/*', serveStatic({ root: './public' }))
 
+// API Documentation
+app.get('/api/docs', serveStatic({ path: './public/static/api-docs.html' }))
+
 // Session middleware
 app.use('/api/*', async (c, next) => {
   const sessionId = c.req.header('X-Session-Id') || crypto.randomUUID()
@@ -487,6 +490,19 @@ app.get('/', (c) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>AI Hypnosis - Revolutionary Hypnotism Platform</title>
         <meta name="description" content="AI-powered hypnosis platform with offensive, defensive, and practice capabilities">
+        <meta name="theme-color" content="#8B5CF6">
+        
+        <!-- PWA Meta Tags -->
+        <link rel="manifest" href="/manifest.json">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="AI Hypnosis">
+        
+        <!-- Icons -->
+        <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+        <link rel="apple-touch-icon" href="/static/icon-192.png">
+        
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <script>
@@ -506,6 +522,17 @@ app.get('/', (c) => {
           }
         </script>
         <link href="/static/styles.css" rel="stylesheet">
+        
+        <!-- Service Worker Registration -->
+        <script>
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed:', err));
+            });
+          }
+        </script>
     </head>
     <body class="bg-gray-900 text-gray-100">
         <div id="app" class="min-h-screen">
