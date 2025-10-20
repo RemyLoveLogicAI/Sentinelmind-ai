@@ -12,6 +12,15 @@ import { HypnosisEngine } from './lib/hypnosis-engine'
 import { AIAgentManager } from './lib/ai-agent-manager'
 import { DefenseProtocol } from './lib/defense-protocol'
 import { TechniqueDatabase } from './lib/technique-database'
+import { 
+  securityHeaders, 
+  rateLimit, 
+  validateRequest, 
+  errorHandler, 
+  requestLogger,
+  ensureDatabase 
+} from './lib/middleware'
+import { CONFIG, validateEnvironment } from './lib/config'
 
 type Bindings = {
   DB: D1Database;
@@ -27,11 +36,30 @@ type Variables = {
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
+// Global error handler
+app.use('*', errorHandler())
+
+// Security headers for all requests
+app.use('*', securityHeaders())
+
+// Request logging and monitoring
+app.use('*', requestLogger())
+
 // Enable CORS for API access
 app.use('/api/*', cors({
-  origin: '*',
+  origin: CONFIG.SECURITY.ALLOWED_ORIGINS,
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-User-Id', 'X-Session-Id'],
+  credentials: false,
+}))
+
+// Add request validation
+app.use('/api/*', validateRequest())
+
+// Rate limiting for API endpoints
+app.use('/api/*', rateLimit({
+  windowMs: CONFIG.RATE_LIMIT.WINDOW_MS,
+  maxRequests: CONFIG.RATE_LIMIT.MAX_REQUESTS_API
 }))
 
 // Add logging middleware
@@ -53,60 +81,84 @@ app.use('/api/*', async (c, next) => {
 })
 
 // Initialize database on first request
-app.use('*', async (c, next) => {
+app.use('/api/*', ensureDatabase())
+
+app.use('/api/*', async (c, next) => {
   const { DB } = c.env
   
-  // Create tables if they don't exist
-  await DB.prepare(`
-    CREATE TABLE IF NOT EXISTS sessions (
-      id TEXT PRIMARY KEY,
-      user_id TEXT,
-      type TEXT NOT NULL,
-      status TEXT DEFAULT 'active',
-      data TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `).run()
+  // Validate environment configuration
+  const envErrors = validateEnvironment(c.env)
+  if (envErrors.length > 0) {
+    console.error('Environment validation errors:', envErrors)
+  }
   
-  await DB.prepare(`
-    CREATE TABLE IF NOT EXISTS techniques (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      category TEXT NOT NULL,
-      name TEXT NOT NULL,
-      description TEXT,
-      script TEXT,
-      difficulty TEXT,
-      effectiveness_rating REAL DEFAULT 0,
-      usage_count INTEGER DEFAULT 0,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `).run()
-  
-  await DB.prepare(`
-    CREATE TABLE IF NOT EXISTS user_progress (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id TEXT NOT NULL,
-      technique_id INTEGER,
-      session_id TEXT,
-      success_rate REAL,
-      notes TEXT,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (technique_id) REFERENCES techniques(id)
-    )
-  `).run()
-  
-  await DB.prepare(`
-    CREATE TABLE IF NOT EXISTS defense_logs (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id TEXT,
-      attack_type TEXT,
-      defense_used TEXT,
-      success BOOLEAN,
-      details TEXT,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `).run()
+  // Create tables if they don't exist (with error handling)
+  try {
+    await DB.prepare(`
+      CREATE TABLE IF NOT EXISTS sessions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        type TEXT NOT NULL,
+        status TEXT DEFAULT 'active',
+        data TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run()
+    
+    await DB.prepare(`
+      CREATE TABLE IF NOT EXISTS techniques (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT,
+        script TEXT,
+        difficulty TEXT,
+        effectiveness_rating REAL DEFAULT 0,
+        usage_count INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run()
+    
+    await DB.prepare(`
+      CREATE TABLE IF NOT EXISTS user_progress (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        technique_id INTEGER,
+        session_id TEXT,
+        success_rate REAL,
+        notes TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (technique_id) REFERENCES techniques(id)
+      )
+    `).run()
+    
+    await DB.prepare(`
+      CREATE TABLE IF NOT EXISTS defense_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        attack_type TEXT,
+        defense_used TEXT,
+        success BOOLEAN,
+        details TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run()
+    
+    await DB.prepare(`
+      CREATE TABLE IF NOT EXISTS analytics_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        event_type TEXT NOT NULL,
+        event_data TEXT,
+        session_id TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run()
+  } catch (error) {
+    console.error('Database initialization error:', error)
+    // Continue anyway - tables may already exist
+  }
   
   await next()
 })
@@ -434,6 +486,7 @@ app.get('/', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>AI Hypnosis - Revolutionary Hypnotism Platform</title>
+        <meta name="description" content="AI-powered hypnosis platform with offensive, defensive, and practice capabilities">
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <script>
@@ -475,6 +528,9 @@ app.get('/', (c) => {
                             Say "They got me" to activate emergency protocol
                         </div>
                     </div>
+                    <div class="mt-8 text-xs text-gray-600">
+                        Version ${CONFIG.APP_VERSION} | <a href="/api/health" class="text-hypno-blue hover:underline">System Health</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -486,13 +542,159 @@ app.get('/', (c) => {
   `)
 })
 
-// Health check endpoint
-app.get('/api/health', (c) => {
-  return c.json({
+// 404 handler
+app.notFound((c) => {
+  if (c.req.path.startsWith('/api/')) {
+    return c.json({
+      success: false,
+      error: 'Endpoint not found',
+      path: c.req.path,
+      availableEndpoints: [
+        '/api/health',
+        '/api/ready',
+        '/api/live',
+        '/api/info',
+        '/api/hypnosis/generate-script',
+        '/api/hypnosis/offensive/execute',
+        '/api/hypnosis/defensive/analyze',
+        '/api/hypnosis/emergency-protocol',
+        '/api/practice/start-session',
+        '/api/techniques/library',
+        '/api/progress/stats'
+      ]
+    }, 404)
+  }
+  
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>404 - Page Not Found | AI Hypnosis</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <i class="fas fa-exclamation-triangle text-6xl text-yellow-500 mb-4"></i>
+            <h1 class="text-4xl font-bold mb-4">404 - Page Not Found</h1>
+            <p class="text-gray-400 mb-8">The page you're looking for doesn't exist.</p>
+            <a href="/" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg inline-block">
+                <i class="fas fa-home mr-2"></i>
+                Return Home
+            </a>
+        </div>
+    </body>
+    </html>
+  `, 404)
+})
+
+// Error handler
+app.onError((error, c) => {
+  console.error('Application error:', error)
+  
+  if (c.req.path.startsWith('/api/')) {
+    return c.json({
+      success: false,
+      error: error.message || 'An internal error occurred',
+      timestamp: new Date().toISOString()
+    }, 500)
+  }
+  
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>500 - Server Error | AI Hypnosis</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center">
+        <div class="text-center max-w-lg">
+            <i class="fas fa-times-circle text-6xl text-red-500 mb-4"></i>
+            <h1 class="text-4xl font-bold mb-4">500 - Server Error</h1>
+            <p class="text-gray-400 mb-8">Something went wrong on our end. Please try again later.</p>
+            <div class="space-x-4">
+                <a href="/" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg inline-block">
+                    <i class="fas fa-home mr-2"></i>
+                    Return Home
+                </a>
+                <a href="/api/health" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg inline-block">
+                    <i class="fas fa-heartbeat mr-2"></i>
+                    Check System Health
+                </a>
+            </div>
+        </div>
+    </body>
+    </html>
+  `, 500)
+})
+
+// Health check endpoint with detailed status
+app.get('/api/health', async (c) => {
+  const startTime = Date.now()
+  const health: any = {
     status: 'operational',
-    version: '1.0.0',
+    version: CONFIG.APP_VERSION,
     timestamp: new Date().toISOString(),
-    message: 'AI Hypnosis system online and ready'
+    checks: {}
+  }
+  
+  // Check database
+  try {
+    await c.env.DB.prepare('SELECT 1').first()
+    health.checks.database = { status: 'ok', responseTime: Date.now() - startTime }
+  } catch (error) {
+    health.checks.database = { status: 'error', error: 'Database unavailable' }
+    health.status = 'degraded'
+  }
+  
+  // Check KV
+  try {
+    await c.env.KV.get('health_check')
+    health.checks.kv = { status: 'ok' }
+  } catch (error) {
+    health.checks.kv = { status: 'error', error: 'KV unavailable' }
+    health.status = 'degraded'
+  }
+  
+  // Check AI API (optional)
+  health.checks.ai = {
+    status: c.env.AI_API_KEY || c.env.OPENAI_API_KEY ? 'configured' : 'not_configured',
+    note: 'AI features will use mock responses if not configured'
+  }
+  
+  health.responseTime = Date.now() - startTime
+  
+  return c.json(health, health.status === 'operational' ? 200 : 503)
+})
+
+// Readiness check for load balancers
+app.get('/api/ready', async (c) => {
+  try {
+    await c.env.DB.prepare('SELECT 1').first()
+    return c.json({ ready: true })
+  } catch (error) {
+    return c.json({ ready: false }, 503)
+  }
+})
+
+// Liveness check
+app.get('/api/live', (c) => {
+  return c.json({ alive: true })
+})
+
+// Version and info endpoint
+app.get('/api/info', (c) => {
+  return c.json({
+    name: CONFIG.APP_NAME,
+    version: CONFIG.APP_VERSION,
+    features: CONFIG.FEATURES,
+    limits: CONFIG.LIMITS,
+    documentation: '/api/docs'
   })
 })
 
