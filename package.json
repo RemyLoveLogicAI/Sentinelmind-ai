@@ -38,6 +38,6 @@
     "@types/node": "^25.5.0",
     "typescript": "^5.3.3",
     "vite": "^6.3.5",
-    "wrangler": "^4.4.0"
+    "wrangler": "^4.77.0"
   }
 }
