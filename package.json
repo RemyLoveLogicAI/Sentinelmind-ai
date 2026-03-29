@@ -28,16 +28,16 @@
     "git:log": "git log --oneline"
   },
   "dependencies": {
-    "hono": "^4.11.7"
+    "hono": "^4.12.9"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250705.0",
     "@hono/vite-cloudflare-pages": "^0.4.2",
     "@hono/vite-build": "^1.2.0",
     "@hono/vite-dev-server": "^0.18.2",
-    "@types/node": "^20.11.0",
+    "@types/node": "^25.5.0",
     "typescript": "^5.3.3",
-    "vite": "^6.3.5",
-    "wrangler": "^4.4.0"
+    "vite": "^8.0.3",
+    "wrangler": "^4.77.0"
   }
 }
