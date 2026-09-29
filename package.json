@@ -39,5 +39,9 @@
     "typescript": "^6.0.3",
     "vite": "^8.0.5",
     "wrangler": "^4.77.0"
+  },
+  "overrides": {
+    "sharp": ">=0.35.4",
+    "browserslist": ">=4.28.7"
   }
 }
