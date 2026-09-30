@@ -28,7 +28,7 @@
     "git:log": "git log --oneline"
   },
   "dependencies": {
-    "hono": "^4.12.18"
+    "hono": "^4.13.9"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260915.1",
