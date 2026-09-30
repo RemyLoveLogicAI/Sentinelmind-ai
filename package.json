@@ -28,7 +28,7 @@
     "git:log": "git log --oneline"
   },
   "dependencies": {
-    "hono": "^4.13.9"
+    "hono": "^4.13.12"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260915.1",
@@ -38,7 +38,7 @@
     "@types/node": "^25.5.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
-    "wrangler": "^4.141.0"
+    "wrangler": "^4.145.0"
   },
   "overrides": {
     "sharp": ">=0.35.4",
