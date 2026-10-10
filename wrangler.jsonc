@@ -5,22 +5,12 @@
   "pages_build_output_dir": "./dist",
   "compatibility_flags": ["nodejs_compat"],
   
-  // D1 Database for session tracking and technique storage
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "hypnosis-db",
-      // ID will be added after creating the database with: npx wrangler d1 create hypnosis-db
-      "database_id": "YOUR_DATABASE_ID_HERE"
-    }
-  ],
-  
   // KV Namespace for caching and quick access
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "YOUR_KV_ID_HERE",
-      "preview_id": "YOUR_KV_PREVIEW_ID_HERE"
+      "id": "c4c98b3772334d738231312699854889",
+      "preview_id": "c4c98b3772334d738231312699854889"
     }
   ],
   
