@@ -38,7 +38,7 @@
     "@types/node": "^25.5.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
-    "wrangler": "^4.145.0"
+    "wrangler": "^4.147.0"
   },
   "overrides": {
     "sharp": ">=0.35.4",
