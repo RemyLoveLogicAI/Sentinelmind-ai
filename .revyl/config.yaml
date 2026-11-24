@@ -1,0 +1,23 @@
+project:
+    id: 5b79de5c-11f8-4191-be4f-d53ad0665f14
+session:
+    idle_timeout_seconds: 1800
+build:
+    profiles:
+        preview:
+            web:
+                app_id: 6c654363-32d2-43c0-ae00-2794bb603571
+                setup_commands:
+                    - npm install
+                build_commands:
+                    - npm run build
+                output_path: dist
+pr_review:
+    enabled: true
+    build:
+        kind: revyl
+        profile: preview
+    proof_of_changes:
+        enabled: true
+        harness:
+            kind: revyl
