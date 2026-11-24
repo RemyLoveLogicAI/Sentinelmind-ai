@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:sandbox": "wrangler pages dev dist --d1=hypnosis-db --local --ip 0.0.0.0 --port 3000",
+    "dev:sandbox": "wrangler pages dev dist --d1=DB --local --ip 0.0.0.0 --port 3000",
     "build": "vite build",
     "preview": "wrangler pages dev dist",
     "deploy": "npm run build && wrangler pages deploy dist --project-name ai-hypnosis",
@@ -28,13 +28,13 @@
     "git:log": "git log --oneline"
   },
   "dependencies": {
-    "hono": "^4.13.12"
+    "hono": "^4.13.14"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260915.1",
+    "@cloudflare/workers-types": "^5.20261006.1",
     "@hono/vite-cloudflare-pages": "^0.4.2",
     "@hono/vite-build": "^1.10.1",
-    "@hono/vite-dev-server": "^0.18.2",
+    "@hono/vite-dev-server": "^0.26.1",
     "@types/node": "^25.5.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",

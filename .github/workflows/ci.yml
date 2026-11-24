@@ -17,7 +17,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - name: Start preview server for smoke test
-        run: npx wrangler pages dev dist --d1=hypnosis-db --local --ip 127.0.0.1 --port 3000 > /tmp/wrangler-pages-dev.log 2>&1 &
+        run: npx wrangler pages dev dist --d1=DB --local --ip 127.0.0.1 --port 3000 > /tmp/wrangler-pages-dev.log 2>&1 &
       - name: Wait for health endpoint
         run: |
           for i in $(seq 1 30); do
