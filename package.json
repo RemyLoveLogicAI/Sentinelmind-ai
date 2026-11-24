@@ -16,7 +16,8 @@
     "restart": "npm run clean-port && pm2 restart ai-hypnosis",
     "stop": "pm2 stop ai-hypnosis",
     "logs": "pm2 logs ai-hypnosis --nostream",
-    "test": "curl http://localhost:3000/api/health",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:create": "wrangler d1 create hypnosis-db",
     "db:migrate:local": "wrangler d1 execute hypnosis-db --local --file=./migrations/init.sql",
     "db:migrate:prod": "wrangler d1 execute hypnosis-db --file=./migrations/init.sql",
@@ -32,12 +33,13 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261006.1",
-    "@hono/vite-cloudflare-pages": "^0.4.2",
     "@hono/vite-build": "^1.10.1",
+    "@hono/vite-cloudflare-pages": "^0.4.2",
     "@hono/vite-dev-server": "^0.26.1",
     "@types/node": "^25.5.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
+    "vitest": "^5.1.1",
     "wrangler": "^4.145.0"
   },
   "overrides": {
