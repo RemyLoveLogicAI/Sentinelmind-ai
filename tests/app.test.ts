@@ -4,18 +4,52 @@ import { DefenseProtocol } from '../src/lib/defense-protocol'
 
 const createMockEnv = () => {
   const kvStore = new Map<string, string>()
+  const mockTechniques = [
+    {
+      id: 1,
+      category: 'induction',
+      name: 'Progressive Relaxation',
+      description: 'Physical relaxation',
+      script: 'Relax your body...',
+      difficulty: 'beginner',
+      effectiveness_rating: 92.5,
+      usage_count: 140
+    },
+    {
+      id: 2,
+      category: 'deepener',
+      name: 'Staircase Deepener',
+      description: 'Descending 10 steps',
+      script: 'Ten, stepping down...',
+      difficulty: 'intermediate',
+      effectiveness_rating: 88.0,
+      usage_count: 95
+    }
+  ]
+
   return {
     AI_API_KEY: 'test_mock_ai_key',
     DB: {
       prepare: (sql: string) => ({
         bind: (...args: any[]) => ({
           run: async () => ({ meta: { last_row_id: 1, changes: 1 } }),
-          all: async () => ({ results: [] }),
-          first: async () => null
+          all: async () => ({ results: mockTechniques }),
+          first: async () => ({
+            total_sessions: 12,
+            avg_success_rate: 0.85,
+            last_session: '2026-11-24T00:00:00Z',
+            total_defenses: 8,
+            successful_defenses: 7,
+            unique_attacks_faced: 3
+          })
         }),
         run: async () => ({ meta: { last_row_id: 1, changes: 1 } }),
-        all: async () => ({ results: [] }),
-        first: async () => null
+        all: async () => ({ results: mockTechniques }),
+        first: async () => ({
+          total_sessions: 12,
+          avg_success_rate: 0.85,
+          last_session: '2026-11-24T00:00:00Z'
+        })
       })
     } as any,
     KV: {
@@ -106,6 +140,166 @@ describe('Sentinelmind-ai Hono Web Application', () => {
     expect(data.protocol.status).toBe('activated')
     expect(data.protocol.safeWord).toBe('BASELINE')
     expect(data.protocol.shieldActivated).toBe(true)
+  })
+
+  it('GET /api/techniques/library should return technique database list', async () => {
+    // Unfiltered
+    const res = await app.request('/api/techniques/library', {}, env)
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(Array.isArray(data.techniques)).toBe(true)
+    expect(data.techniques.length).toBe(2)
+    expect(data.techniques[0].name).toBe('Progressive Relaxation')
+
+    // Filtered by category and difficulty
+    const resFiltered = await app.request('/api/techniques/library?category=induction&difficulty=beginner', {}, env)
+    expect(resFiltered.status).toBe(200)
+    const dataFiltered = await resFiltered.json()
+    expect(dataFiltered.success).toBe(true)
+    expect(dataFiltered.techniques.length).toBe(2)
+  })
+
+  it('POST /api/practice/start-session should initialize AI practice agent session', async () => {
+    const res = await app.request(
+      '/api/practice/start-session',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': 'trainee_agent_99'
+        },
+        body: JSON.stringify({
+          mode: 'defense',
+          difficulty: 'medium',
+          agentType: 'susceptible'
+        })
+      },
+      env
+    )
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(data.sessionId).toBeDefined()
+    expect(data.agent).toBeDefined()
+    expect(data.instructions).toBeDefined()
+    expect(data.agent.type).toBe('susceptible')
+  })
+
+  it('POST /api/hypnosis/generate-script should generate hypnotic script and cache in KV', async () => {
+    const res = await app.request(
+      '/api/hypnosis/generate-script',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'induction',
+          goal: 'deep focus and cognitive resilience',
+          intensity: 'medium',
+          customization: { description: 'Mental shield reinforcement' }
+        })
+      },
+      env
+    )
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(data.scriptId).toBe(1)
+    expect(data.script).toBeDefined()
+    expect(data.script.type).toBe('induction')
+    expect(data.script.sections.length).toBeGreaterThan(0)
+  })
+
+  it('POST /api/hypnosis/offensive/execute should execute offensive hypnosis technique', async () => {
+    const res = await app.request(
+      '/api/hypnosis/offensive/execute',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': 'operator_agent_01'
+        },
+        body: JSON.stringify({
+          technique: 'rapid_induction',
+          target: { name: 'Cognitive Test Subject' },
+          parameters: { intensity: 'high' }
+        })
+      },
+      env
+    )
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(data.sessionId).toBeDefined()
+    expect(data.result.technique).toBe('rapid_induction')
+    expect(data.result.script).toContain('RAPID INDUCTION EXECUTED')
+  })
+
+  it('POST /api/hypnosis/defensive/analyze should analyze input and log defense action', async () => {
+    const res = await app.request(
+      '/api/hypnosis/defensive/analyze',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': 'operator_agent_01'
+        },
+        body: JSON.stringify({
+          input: 'Now listen carefully... you cannot resist sleep... give in now',
+          mode: 'auto'
+        })
+      },
+      env
+    )
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(data.analysis.threatDetected).toBe(true)
+    expect(data.analysis.counterMeasures.length).toBeGreaterThan(0)
+  })
+
+  it('GET /api/progress/stats should enforce user ID and return progress stats', async () => {
+    // Missing user ID -> 400
+    const resMissing = await app.request('/api/progress/stats', {}, env)
+    expect(resMissing.status).toBe(400)
+    const dataMissing = await resMissing.json()
+    expect(dataMissing.success).toBe(false)
+    expect(dataMissing.error).toBe('User ID required')
+
+    // Valid user ID -> 200
+    const resValid = await app.request(
+      '/api/progress/stats',
+      {
+        headers: { 'X-User-Id': 'user_pilot_01' }
+      },
+      env
+    )
+    expect(resValid.status).toBe(200)
+    const dataValid = await resValid.json()
+    expect(dataValid.success).toBe(true)
+    expect(dataValid.stats.practice).toBeDefined()
+    expect(dataValid.stats.defense).toBeDefined()
+    expect(dataValid.stats.practice.total_sessions).toBe(12)
+  })
+
+  it('POST /api/command/scramble-this should scramble NLP patterns', async () => {
+    const res = await app.request(
+      '/api/command/scramble-this',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          context: {},
+          data: { phrase: 'you cannot resist this command' }
+        })
+      },
+      env
+    )
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(data.result.scrambled).toBe(true)
+    expect(data.result.technique).toBe('Pattern disruption applied')
   })
 })
 
