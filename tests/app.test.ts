@@ -301,6 +301,105 @@ describe('Sentinelmind-ai Hono Web Application', () => {
     expect(data.result.scrambled).toBe(true)
     expect(data.result.technique).toBe('Pattern disruption applied')
   })
+
+  it('POST /api/command/analyze-moment should analyze real-time context for threats', async () => {
+    const res = await app.request(
+      '/api/command/analyze-moment',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          context: { interactionType: 'negotiation', participants: 2 },
+          data: {}
+        })
+      },
+      env
+    )
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(data.result.safetyLevel).toBe('high')
+    expect(data.result.contextAnalysis).toBeDefined()
+  })
+
+  it('POST /api/command/update-case-file should persist case file into KV store', async () => {
+    const res = await app.request(
+      '/api/command/update-case-file',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': 'investigator_007'
+        },
+        body: JSON.stringify({
+          context: {},
+          data: { incident: 'Targeted trance induction attempt', severity: 'medium' }
+        })
+      },
+      env
+    )
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(data.result.message).toBe('Case file updated')
+  })
+
+  it('POST /api/command/extract-what-matters should extract evidence and defenses', async () => {
+    const res = await app.request(
+      '/api/command/extract-what-matters',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          context: { transcript: 'Now imagine yourself relaxing deeper and deeper...' },
+          data: {}
+        })
+      },
+      env
+    )
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data.success).toBe(true)
+    expect(data.result.effectiveness).toBe('Analysis complete')
+    expect(Array.isArray(data.result.keyPoints)).toBe(true)
+  })
+
+  it('POST /api/analyze/voice should enforce audio file and analyze voice patterns', async () => {
+    // 1. Missing audio file -> 400
+    const emptyForm = new FormData()
+    const resMissing = await app.request(
+      '/api/analyze/voice',
+      {
+        method: 'POST',
+        body: emptyForm
+      },
+      env
+    )
+    expect(resMissing.status).toBe(400)
+    const dataMissing = await resMissing.json()
+    expect(dataMissing.success).toBe(false)
+    expect(dataMissing.error).toBe('Audio file required')
+
+    // 2. Valid audio file -> 200
+    const formWithAudio = new FormData()
+    const mockAudioBlob = new Blob([new Uint8Array([0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00])], { type: 'audio/wav' })
+    formWithAudio.append('audio', mockAudioBlob, 'sample.wav')
+
+    const resValid = await app.request(
+      '/api/analyze/voice',
+      {
+        method: 'POST',
+        body: formWithAudio
+      },
+      env
+    )
+    expect(resValid.status).toBe(200)
+    const dataValid = await resValid.json()
+    expect(dataValid.success).toBe(true)
+    expect(dataValid.analysis).toBeDefined()
+    expect(dataValid.analysis.threatLevel).toBe('low')
+    expect(dataValid.analysis.confidence).toBe(75)
+  })
 })
 
 describe('DefenseProtocol Unit Tests', () => {
@@ -331,5 +430,14 @@ describe('DefenseProtocol Unit Tests', () => {
     expect(emergency.status).toBe('activated')
     expect(emergency.safeWord).toBe('BASELINE')
     expect(emergency.extractionSteps).toContain('1. STOP - Cease all current mental activity')
+  })
+
+  it('should perform voice and moment analysis', async () => {
+    const voiceAnalysis = await defense.analyzeVoice('bW9ja19hdWRpb19kYXRh')
+    expect(voiceAnalysis.threatLevel).toBe('low')
+    expect(voiceAnalysis.confidence).toBe(75)
+
+    const momentAnalysis = await defense.analyzeMoment({ test: true })
+    expect(momentAnalysis.safetyLevel).toBe('high')
   })
 })
